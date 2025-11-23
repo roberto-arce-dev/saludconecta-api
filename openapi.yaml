@@ -1,0 +1,810 @@
+openapi: 3.0.0
+info:
+  title: saludconecta API
+  description: API REST completa con autenticación JWT y CRUD de entidades
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3015/api
+    description: Servidor de desarrollo
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@sistema.com
+        password:
+          type: string
+          example: Admin123456
+
+    RegisterRequest:
+      type: object
+      required:
+        - nombre
+        - email
+        - password
+        - role
+      properties:
+        nombre:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        nombre:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        createdAt:
+          type: string
+
+    EntityBase:
+      type: object
+      properties:
+        _id:
+          type: string
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        imagen:
+          type: string
+        imagenThumbnail:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Autenticación
+      summary: Iniciar sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login exitoso
+        '401':
+          description: Credenciales inválidas
+
+  /auth/register:
+    post:
+      tags:
+        - Autenticación
+      summary: Registrar usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Usuario registrado
+        '409':
+          description: Email ya existe
+
+  /auth/profile:
+    get:
+      tags:
+        - Autenticación
+      summary: Obtener perfil
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Perfil obtenido
+
+  /auth/users:
+    get:
+      tags:
+        - Autenticación
+      summary: Listar usuarios (Admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de usuarios
+
+  /upload/image:
+    post:
+      tags:
+        - Upload
+      summary: Subir imagen
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Imagen subida
+
+  /paciente:
+    get:
+      tags:
+        - Paciente
+      summary: Listar todos los Pacientes
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de Pacientes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EntityBase'
+    post:
+      tags:
+        - Paciente
+      summary: Crear Paciente
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+              properties:
+                nombre:
+                  type: string
+                descripcion:
+                  type: string
+      responses:
+        '201':
+          description: Paciente creado
+
+  /paciente/{id}:
+    get:
+      tags:
+        - Paciente
+      summary: Obtener Paciente por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paciente encontrado
+        '404':
+          description: Paciente no encontrado
+    patch:
+      tags:
+        - Paciente
+      summary: Actualizar Paciente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                descripcion:
+                  type: string
+      responses:
+        '200':
+          description: Paciente actualizado
+    delete:
+      tags:
+        - Paciente
+      summary: Eliminar Paciente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paciente eliminado
+
+  /paciente/{id}/upload-image:
+    post:
+      tags:
+        - Paciente
+      summary: Subir imagen a Paciente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Imagen subida
+
+  /medico:
+    get:
+      tags:
+        - Medico
+      summary: Listar todos los Medicos
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de Medicos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EntityBase'
+    post:
+      tags:
+        - Medico
+      summary: Crear Medico
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+              properties:
+                nombre:
+                  type: string
+                descripcion:
+                  type: string
+      responses:
+        '201':
+          description: Medico creado
+
+  /medico/{id}:
+    get:
+      tags:
+        - Medico
+      summary: Obtener Medico por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Medico encontrado
+        '404':
+          description: Medico no encontrado
+    patch:
+      tags:
+        - Medico
+      summary: Actualizar Medico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                descripcion:
+                  type: string
+      responses:
+        '200':
+          description: Medico actualizado
+    delete:
+      tags:
+        - Medico
+      summary: Eliminar Medico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Medico eliminado
+
+  /medico/{id}/upload-image:
+    post:
+      tags:
+        - Medico
+      summary: Subir imagen a Medico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Imagen subida
+
+  /cita-medica:
+    get:
+      tags:
+        - CitaMedica
+      summary: Listar todos los CitaMedicas
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de CitaMedicas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EntityBase'
+    post:
+      tags:
+        - CitaMedica
+      summary: Crear CitaMedica
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+              properties:
+                nombre:
+                  type: string
+                descripcion:
+                  type: string
+      responses:
+        '201':
+          description: CitaMedica creado
+
+  /cita-medica/{id}:
+    get:
+      tags:
+        - CitaMedica
+      summary: Obtener CitaMedica por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: CitaMedica encontrado
+        '404':
+          description: CitaMedica no encontrado
+    patch:
+      tags:
+        - CitaMedica
+      summary: Actualizar CitaMedica
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                descripcion:
+                  type: string
+      responses:
+        '200':
+          description: CitaMedica actualizado
+    delete:
+      tags:
+        - CitaMedica
+      summary: Eliminar CitaMedica
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: CitaMedica eliminado
+
+  /cita-medica/{id}/upload-image:
+    post:
+      tags:
+        - CitaMedica
+      summary: Subir imagen a CitaMedica
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Imagen subida
+
+  /historial-clinico:
+    get:
+      tags:
+        - HistorialClinico
+      summary: Listar todos los HistorialClinicos
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de HistorialClinicos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EntityBase'
+    post:
+      tags:
+        - HistorialClinico
+      summary: Crear HistorialClinico
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+              properties:
+                nombre:
+                  type: string
+                descripcion:
+                  type: string
+      responses:
+        '201':
+          description: HistorialClinico creado
+
+  /historial-clinico/{id}:
+    get:
+      tags:
+        - HistorialClinico
+      summary: Obtener HistorialClinico por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: HistorialClinico encontrado
+        '404':
+          description: HistorialClinico no encontrado
+    patch:
+      tags:
+        - HistorialClinico
+      summary: Actualizar HistorialClinico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                descripcion:
+                  type: string
+      responses:
+        '200':
+          description: HistorialClinico actualizado
+    delete:
+      tags:
+        - HistorialClinico
+      summary: Eliminar HistorialClinico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: HistorialClinico eliminado
+
+  /historial-clinico/{id}/upload-image:
+    post:
+      tags:
+        - HistorialClinico
+      summary: Subir imagen a HistorialClinico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Imagen subida
+
+  /tratamiento:
+    get:
+      tags:
+        - Tratamiento
+      summary: Listar todos los Tratamientos
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de Tratamientos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EntityBase'
+    post:
+      tags:
+        - Tratamiento
+      summary: Crear Tratamiento
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+              properties:
+                nombre:
+                  type: string
+                descripcion:
+                  type: string
+      responses:
+        '201':
+          description: Tratamiento creado
+
+  /tratamiento/{id}:
+    get:
+      tags:
+        - Tratamiento
+      summary: Obtener Tratamiento por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tratamiento encontrado
+        '404':
+          description: Tratamiento no encontrado
+    patch:
+      tags:
+        - Tratamiento
+      summary: Actualizar Tratamiento
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                descripcion:
+                  type: string
+      responses:
+        '200':
+          description: Tratamiento actualizado
+    delete:
+      tags:
+        - Tratamiento
+      summary: Eliminar Tratamiento
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tratamiento eliminado
+
+  /tratamiento/{id}/upload-image:
+    post:
+      tags:
+        - Tratamiento
+      summary: Subir imagen a Tratamiento
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Imagen subida
