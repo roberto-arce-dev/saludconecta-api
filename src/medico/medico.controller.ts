@@ -102,6 +102,32 @@ export class MedicoController {
     return { success: true, data, total: data.length };
   }
 
+  @Get('disponibles')
+  @ApiOperation({ summary: 'Listar médicos disponibles' })
+  @ApiResponse({ status: 200, description: 'Lista de médicos disponibles para citas' })
+  async findDisponibles() {
+    const data = await this.medicoService.findDisponibles();
+    return { success: true, data, total: data.length };
+  }
+
+  @Get('especialidad/:especialidad')
+  @ApiOperation({ summary: 'Filtrar médicos por especialidad' })
+  @ApiParam({ name: 'especialidad', description: 'Especialidad médica' })
+  @ApiResponse({ status: 200, description: 'Lista de médicos por especialidad' })
+  async findByEspecialidad(@Param('especialidad') especialidad: string) {
+    const data = await this.medicoService.findByEspecialidad(especialidad);
+    return { success: true, data, total: data.length };
+  }
+
+  @Get('search/:termino')
+  @ApiOperation({ summary: 'Buscar médicos por nombre o especialidad' })
+  @ApiParam({ name: 'termino', description: 'Término de búsqueda' })
+  @ApiResponse({ status: 200, description: 'Resultados de la búsqueda' })
+  async buscarMedicos(@Param('termino') termino: string) {
+    const data = await this.medicoService.buscarMedicos(termino);
+    return { success: true, data, total: data.length };
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Obtener Medico por ID' })
   @ApiParam({ name: 'id', description: 'ID del Medico' })

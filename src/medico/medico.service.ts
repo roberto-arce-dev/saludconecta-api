@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateMedicoDto } from './dto/create-medico.dto';
 import { UpdateMedicoDto } from './dto/update-medico.dto';
 import { Medico, MedicoDocument } from './schemas/medico.schema';
@@ -42,5 +42,41 @@ export class MedicoService {
     if (!result) {
       throw new NotFoundException(`Medico con ID ${id} no encontrado`);
     }
+  }
+
+  // Métodos EP3 agregados
+  async findDisponibles(): Promise<Medico[]> {
+    return this.medicoModel.find({ 
+      disponible: true,
+      activo: true 
+    })
+    .populate('usuario', 'nombre email')
+    .sort({ especialidad: 1, nombre: 1 })
+    .exec();
+  }
+
+  async findByEspecialidad(especialidad: string): Promise<Medico[]> {
+    return this.medicoModel.find({ 
+      especialidad: { $regex: especialidad, $options: 'i' },
+      activo: true 
+    })
+    .populate('usuario', 'nombre email')
+    .sort({ nombre: 1 })
+    .exec();
+  }
+
+  async buscarMedicos(termino: string): Promise<Medico[]> {
+    const regex = { $regex: termino, $options: 'i' };
+    return this.medicoModel.find({
+      $or: [
+        { nombre: regex },
+        { especialidad: regex },
+        { descripcion: regex }
+      ],
+      activo: true
+    })
+    .populate('usuario', 'nombre email')
+    .sort({ nombre: 1 })
+    .exec();
   }
 }

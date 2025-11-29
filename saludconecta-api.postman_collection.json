@@ -773,6 +773,155 @@
           }
         }
       ]
+    },
+    {
+      "name": "Médico",
+      "item": [
+        {
+          "name": "Médicos Disponibles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/medico/disponibles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "medico",
+                "disponibles"
+              ]
+            },
+            "description": "Listar médicos disponibles para citas"
+          },
+          "response": []
+        },
+        {
+          "name": "Médicos por Especialidad",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/medico/especialidad/{{especialidad}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "medico",
+                "especialidad",
+                "{{especialidad}}"
+              ]
+            },
+            "description": "Filtrar médicos por especialidad"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints específicos de Médico"
+    },
+    {
+      "name": "Cita Médica",
+      "item": [
+        {
+          "name": "Mis Citas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/citamedica/paciente/{{pacienteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "citamedica",
+                "paciente",
+                "{{pacienteId}}"
+              ]
+            },
+            "description": "Obtener citas del paciente"
+          },
+          "response": []
+        },
+        {
+          "name": "Agendar Cita",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/citamedica/agendar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "citamedica",
+                "agendar"
+              ]
+            },
+            "description": "Agendar nueva cita médica",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"{{pacienteId}}\",\n  \"medicoId\": \"{{medicoId}}\",\n  \"fechaCita\": \"2024-12-25T10:00:00\",\n  \"motivoConsulta\": \"Consulta general\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Próximas Citas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/citamedica/proximas/paciente/{{pacienteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "citamedica",
+                "proximas",
+                "paciente",
+                "{{pacienteId}}"
+              ]
+            },
+            "description": "Obtener próximas citas del paciente"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints específicos de Cita Médica"
     }
   ],
   "variable": [

@@ -16,8 +16,8 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody, A
 import { CitaMedicaService } from './citamedica.service';
 import { CreateCitaMedicaDto } from './dto/create-citamedica.dto';
 import { UpdateCitaMedicaDto } from './dto/update-citamedica.dto';
+import { AgendarCitaDto } from './dto/agendar-cita.dto';
 import { UploadService } from '../upload/upload.service';
-
 @ApiTags('CitaMedica')
 @ApiBearerAuth('JWT-auth')
 @Controller('cita-medica')
@@ -95,10 +95,51 @@ export class CitaMedicaController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar todos los CitaMedicas' })
-  @ApiResponse({ status: 200, description: 'Lista de CitaMedicas' })
+  @ApiOperation({ summary: 'Listar todos los Citamedicas' })
+  @ApiResponse({ status: 200, description: 'Lista de Citamedicas' })
   async findAll() {
     const data = await this.citamedicaService.findAll();
+    return { success: true, data, total: data.length };
+  }
+
+  @Get('paciente/:pacienteId')
+  @ApiOperation({ summary: 'Obtener citas de un paciente' })
+  @ApiParam({ name: 'pacienteId', description: 'ID del paciente' })
+  @ApiResponse({ status: 200, description: 'Lista de citas del paciente' })
+  async findByPaciente(@Param('pacienteId') pacienteId: string) {
+    const data = await this.citamedicaService.findByPaciente(pacienteId);
+    return { success: true, data, total: data.length };
+  }
+
+  @Get('medico/:medicoId')
+  @ApiOperation({ summary: 'Obtener citas de un médico' })
+  @ApiParam({ name: 'medicoId', description: 'ID del médico' })
+  @ApiResponse({ status: 200, description: 'Lista de citas del médico' })
+  async findByMedico(@Param('medicoId') medicoId: string) {
+    const data = await this.citamedicaService.findByMedico(medicoId);
+    return { success: true, data, total: data.length };
+  }
+
+  @Post('agendar')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Agendar nueva cita médica' })
+  @ApiBody({ type: AgendarCitaDto })
+  @ApiResponse({ status: 201, description: 'Cita agendada exitosamente' })
+  async agendarCita(@Body() citaDto: AgendarCitaDto) {
+    const data = await this.citamedicaService.agendarCita(citaDto);
+    return {
+      success: true,
+      message: 'Cita agendada exitosamente',
+      data,
+    };
+  }
+
+  @Get('proximas/paciente/:pacienteId')
+  @ApiOperation({ summary: 'Obtener próximas citas del paciente' })
+  @ApiParam({ name: 'pacienteId', description: 'ID del paciente' })
+  @ApiResponse({ status: 200, description: 'Lista de próximas citas' })
+  async getProximasCitas(@Param('pacienteId') pacienteId: string) {
+    const data = await this.citamedicaService.getProximasCitas(pacienteId);
     return { success: true, data, total: data.length };
   }
 

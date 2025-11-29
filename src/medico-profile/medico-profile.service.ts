@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { MedicoProfile, MedicoProfileDocument } from './schemas/medico-profile.schema';
 import { CreateMedicoProfileDto } from './dto/create-medico-profile.dto';
 import { UpdateMedicoProfileDto } from './dto/update-medico-profile.dto';
@@ -13,14 +13,14 @@ export class MedicoProfileService {
 
   async create(userId: string, dto: CreateMedicoProfileDto): Promise<MedicoProfile> {
     const profile = await this.medicoprofileModel.create({
-      user: userId,
+      user: new Types.ObjectId(userId),
       ...dto,
     });
     return profile;
   }
 
   async findByUserId(userId: string): Promise<MedicoProfile | null> {
-    return this.medicoprofileModel.findOne({ user: userId }).populate('user', 'email role').exec();
+    return this.medicoprofileModel.findOne({ user: new Types.ObjectId(userId) }).populate('user', 'email role').exec();
   }
 
   async findAll(): Promise<MedicoProfile[]> {
@@ -29,7 +29,7 @@ export class MedicoProfileService {
 
   async update(userId: string, dto: UpdateMedicoProfileDto): Promise<MedicoProfile> {
     const profile = await this.medicoprofileModel.findOneAndUpdate(
-      { user: userId },
+      { user: new Types.ObjectId(userId) },
       { $set: dto },
       { new: true },
     );
@@ -40,7 +40,7 @@ export class MedicoProfileService {
   }
 
   async delete(userId: string): Promise<void> {
-    const result = await this.medicoprofileModel.deleteOne({ user: userId });
+    const result = await this.medicoprofileModel.deleteOne({ user: new Types.ObjectId(userId) });
     if (result.deletedCount === 0) {
       throw new NotFoundException('Profile no encontrado');
     }
