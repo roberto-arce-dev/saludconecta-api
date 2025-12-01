@@ -10,6 +10,9 @@ import { AuthModule } from './auth/auth.module';
 import { UploadModule } from './upload/upload.module';
 import { PacienteProfileModule } from './paciente-profile/paciente-profile.module';
 import { MedicoProfileModule } from './medico-profile/medico-profile.module';
+import { CitaMedicaModule } from './citamedica/citamedica.module';
+import { HistorialClinicoModule } from './historialclinico/historialclinico.module';
+import { TratamientoModule } from './tratamiento/tratamiento.module';
 
 @Module({
   imports: [
@@ -43,6 +46,9 @@ import { MedicoProfileModule } from './medico-profile/medico-profile.module';
     PacienteProfileModule,
     MedicoProfileModule,
     UploadModule,
+    CitaMedicaModule,
+    HistorialClinicoModule,
+    TratamientoModule,
   ],
   controllers: [AppController],
   providers: [
