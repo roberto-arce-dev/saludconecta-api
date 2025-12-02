@@ -623,7 +623,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Nombre Actualizado\",\n  \"telefono\": \"+51 987654321\"\n}"
+              "raw": "{\n  \"nombre\": \"Valor de nombre\",\n  \"telefono\": \"+51 900000000\",\n  \"fechaNacimiento\": \"Valor de fechaNacimiento\",\n  \"grupoSanguineo\": \"Valor de grupoSanguineo\",\n  \"alergias\": \"Valor de alergias\",\n  \"contactoEmergencia\": \"Valor de contactoEmergencia\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/paciente-profile/me",
@@ -715,7 +715,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Nombre Actualizado\",\n  \"telefono\": \"+51 987654321\"\n}"
+              "raw": "{\n  \"nombreCompleto\": \"Valor de nombreCompleto\",\n  \"telefono\": \"+51 900000000\",\n  \"especialidad\": \"Valor de especialidad\",\n  \"cmp\": \"Valor de cmp\",\n  \"consultorio\": \"Valor de consultorio\",\n  \"isVerified\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/medico-profile/me",
